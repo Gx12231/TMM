@@ -1,0 +1,86 @@
+name: Compilar APK de TMname: Compilar APK de TM
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ordenar archivos
+        run: |
+          mkdir -p www assets
+          cp index.html cartas.js *.woff2 www/
+          cp icon-only.png icon-foreground.png icon-background.png assets/
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - run: npm install
+      - run: npx cap add android
+      - run: npx capacitor-assets generate --android
+
+      - name: Permisos e ícono de notificaciones
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cp ic_stat_tm.png android/app/src/main/res/drawable/ic_stat_tm.png
+          sed -i 's#</manifest>#<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/><uses-permission android:name="android.permission.USE_EXACT_ALARM"/></manifest>#' android/app/src/main/AndroidManifest.xml
+
+      - run: npx cap sync android
+
+      - name: Compilar APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TM-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ordenar archivos
+        run: |
+          mkdir -p www assets
+          cp index.html cartas.js *.woff2 www/
+          cp icon-only.png icon-foreground.png icon-background.png assets/
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - run: npm install
+      - run: npx cap add android
+      - run: npx capacitor-assets generate --android
+
+      - name: Permisos e ícono de notificaciones
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cp ic_stat_tm.png android/app/src/main/res/drawable/ic_stat_tm.png
+          sed -i 's#</manifest>#<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/><uses-permission android:name="android.permission.USE_EXACT_ALARM"/></manifest>#' android/app/src/main/AndroidManifest.xml
