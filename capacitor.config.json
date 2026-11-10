@@ -1,0 +1,10 @@
+{
+  "appId": "com.emmanuel.tm",
+  "appName": "TM",
+  "webDir": "www",
+  "backgroundColor": "#cdeee7",
+  "plugins": {
+    "StatusBar": { "style": "LIGHT", "backgroundColor": "#cdeee7", "overlaysWebView": false },
+    "LocalNotifications": { "smallIcon": "ic_stat_tm", "iconColor": "#2eaa8a" }
+  }
+}
